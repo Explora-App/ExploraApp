@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "com.example.explora.app-mergeDebugResources-60:/layout/quiz_item.xml",
+        "source": "com.example.explora.app-main-63:/layout/quiz_item.xml"
+    },
+    {
+        "merged": "com.example.explora.app-mergeDebugResources-60:/layout/fragment_quiz.xml",
+        "source": "com.example.explora.app-main-63:/layout/fragment_quiz.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-mergeDebugResources-60:\\layout\\fragment_quiz.xml",
+        "source": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-main-63:\\layout\\fragment_quiz.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-mergeDebugResources-60:\\layout\\fragment_history.xml",
+        "source": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-main-63:\\layout\\fragment_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-mergeDebugResources-60:\\layout\\activity_splash.xml",
+        "source": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-main-63:\\layout\\activity_splash.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-mergeDebugResources-60:\\layout\\fragment_home.xml",
+        "source": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-main-63:\\layout\\fragment_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-mergeDebugResources-60:\\layout\\quiz_item.xml",
+        "source": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-main-63:\\layout\\quiz_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-mergeDebugResources-60:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\ASUS VIVOBOOK 15\\.gradle\\daemon\\8.0\\com.example.explora.app-main-63:\\layout\\activity_main.xml"
+    }
+]
