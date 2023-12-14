@@ -68,17 +68,6 @@ class HomeFragment : Fragment() {
         }
 
     // Fungsi untuk mengambil gambar
-//    private fun takePicture() {
-//        Log.d(TAG, "Taking picture")
-//        photoFile = createImageFile()
-//        val photoURI: Uri = FileProvider.getUriForFile(
-//            requireContext(),
-//            "com.example.explora.fileprovider",
-//            photoFile
-//        )
-//        takePictureLauncher.launch(photoURI)
-//    }
-
     private fun imageToBitmap(image: Image): Bitmap {
         val buffer: ByteBuffer = image.planes[0].buffer
         val bytes = ByteArray(buffer.remaining())
@@ -123,6 +112,16 @@ class HomeFragment : Fragment() {
         )
     }
 
+    private fun takePicture() {
+        Log.d(TAG, "Taking picture")
+        photoFile = createImageFile()
+        val photoURI: Uri = FileProvider.getUriForFile(
+            requireContext(),
+            "com.example.explora.fileprovider",
+            photoFile
+        )
+        takePictureLauncher.launch(photoURI)
+    }
     // Fungsi untuk membuat file gambar
     @Throws(IOException::class)
     private fun createImageFile(): File {
