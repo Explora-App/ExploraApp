@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -29,22 +28,23 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.lifecycle.lifecycleScope
-import com.example.explora.data.network.ApiConfig
-import com.example.explora.data.network.ApiService
+import androidx.lifecycle.ViewModelProvider
+import com.example.explora.data.repository.HomeRepository
 import com.example.explora.databinding.FragmentHomeBinding
 import com.example.explora.ui.detail.DetailPlantActivity
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
+import com.example.explora.ui.home.viewmodel.HomeViewModel
+import com.example.explora.ui.home.viewmodel.HomeViewModelFactory
+import com.example.explora.ui.home.viewmodel.UploadResult
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.HttpException
+import okhttp3.internal.platform.android.BouncyCastleSocketAdapter.Companion.factory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
+import androidx.lifecycle.Observer
+
 
 
 class HomeFragment : Fragment() {
@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
     private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var imageCapture: ImageCapture? = null
     private lateinit var photoFile: File
-
+    private lateinit var viewModel: HomeViewModel
 
     // Fungsi untuk mengambil gambar
     private fun imageToBitmap(image: Image): Bitmap {
@@ -86,19 +86,22 @@ class HomeFragment : Fragment() {
                         outputStream.close()
 
                         // Upload the captured image to the API
-                        uploadImage()
+                        val filePart = createFilePart(photoFile) // Create MultipartBody.Part from your file
+                        viewModel.uploadImage(filePart)
+
 
                     } catch (e: IOException) {
                         Log.e(TAG, "Error saving captured image: ${e.message}")
                     }
                 }
 
-                override fun onError(exception: ImageCaptureException) {
-                    super.onError(exception)
-                    Log.e(TAG, "Capture failed: ${exception.message}")
-                }
             }
         )
+    }
+
+    private fun createFilePart(file: File): MultipartBody.Part {
+        val requestFile = file.asRequestBody("image/jpg".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData("image", file.name, requestFile)
     }
 
     // Fungsi untuk membuat file gambar
@@ -117,43 +120,6 @@ class HomeFragment : Fragment() {
         return image
     }
 
-
-    // Fungsi untuk mengunggah gambar ke API dan menampilkan respons
-    private fun uploadImage() {
-        val filePart = MultipartBody.Part.createFormData(
-            "image",
-            photoFile.name,
-            photoFile.asRequestBody("image/jpg".toMediaType())
-        )
-
-        lifecycleScope.launch {
-            try {
-                val response =
-                    ApiConfig.retrofit.create(ApiService::class.java).uploadImage(filePart)
-                if (response.status?.code == 200) {
-                    // Tampilkan nama dan gambar
-                    val name = response.data?.information?.name
-                    val imageUrl = response.data?.information?.image
-                    // Gunakan name dan imageUrl sesuai kebutuhan Anda
-
-                    val intent = Intent(requireActivity(), DetailPlantActivity::class.java)
-                    intent.putExtra("name", name.toString())
-                    intent.putExtra("imageUrl", imageUrl.toString())
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                }
-            } catch (e: HttpException) {
-                // Tangani eksepsi HttpException di sini
-                val errorMessage = e.response()?.errorBody()?.string()
-                Log.e("UploadImage", "HTTP Error: $errorMessage")
-            } catch (e: Exception) {
-                // Tangani eksepsi umum di sini
-                Log.e("UploadImage", "Error: ${e.message}")
-            }
-        }
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -164,18 +130,30 @@ class HomeFragment : Fragment() {
             Log.d(TAG, "Capture button clicked")
             takePicture()
         }
+        viewModel.uploadResult.observe(viewLifecycleOwner, Observer { result ->
+            when (result) {
+                is UploadResult.Success -> {
+                    val intent = Intent(requireActivity(), DetailPlantActivity::class.java)
+                    intent.putExtra("name", result.name)
+                    intent.putExtra("imageUrl", result.imageUrl)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                }
+                is UploadResult.Error -> {
+                    // Handle error
+                }
+            }
+        })
         return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this, HomeViewModelFactory(HomeRepository()))
+            .get(HomeViewModel::class.java)
         arguments?.let {
-            binding.switchCamera.setOnClickListener {
-                cameraSelector =
-                    if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
-                    else CameraSelector.DEFAULT_BACK_CAMERA
-                startCamera()
-            }
+            viewModel = ViewModelProvider(this, HomeViewModelFactory(HomeRepository()))
+                .get(HomeViewModel::class.java)
         }
     }
 
@@ -306,4 +284,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
+

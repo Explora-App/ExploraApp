@@ -7,14 +7,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
     private const val BASE_URL = "https://aruna-r3wznanhga-et.a.run.app/api/"
-//
-//    private val client = OkHttpClient.Builder().build()
-//
-//    val retrofit: Retrofit = Retrofit.Builder()
-//        .baseUrl(BASE_URL)
-//        .client(client)
-//        .addConverterFactory(GsonConverterFactory.create())
-//        .build()
 
     val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -29,6 +21,5 @@ object ApiConfig {
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-
 }
 
