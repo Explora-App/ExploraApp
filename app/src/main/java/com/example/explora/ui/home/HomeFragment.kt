@@ -55,17 +55,6 @@ class HomeFragment : Fragment() {
     private var imageCapture: ImageCapture? = null
     private lateinit var photoFile: File
 
-    // Buat instance dari ActivityResultLauncher
-    private val takePictureLauncher =
-        registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
-            if (isSuccess) {
-                Log.d(
-                    TAG,
-                    "SUCCESSSSSSSSSSSSSSSSSSSS"
-                )
-                uploadImage()
-            }
-        }
 
     // Fungsi untuk mengambil gambar
     private fun imageToBitmap(image: Image): Bitmap {
