@@ -47,7 +47,6 @@ import androidx.lifecycle.Observer
 
 
 
-
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -56,7 +55,6 @@ class HomeFragment : Fragment() {
     private var imageCapture: ImageCapture? = null
     private lateinit var photoFile: File
     private lateinit var viewModel: HomeViewModel
-
 
     // Fungsi untuk mengambil gambar
     private fun imageToBitmap(image: Image): Bitmap {
@@ -91,10 +89,12 @@ class HomeFragment : Fragment() {
                         val filePart = createFilePart(photoFile) // Create MultipartBody.Part from your file
                         viewModel.uploadImage(filePart)
 
+
                     } catch (e: IOException) {
                         Log.e(TAG, "Error saving captured image: ${e.message}")
                     }
                 }
+
             }
         )
     }
@@ -119,7 +119,6 @@ class HomeFragment : Fragment() {
 
         return image
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -285,4 +284,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }
+

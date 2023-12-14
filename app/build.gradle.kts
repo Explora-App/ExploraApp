@@ -76,7 +76,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 //    Manually added
-
     val cameraxVersion = "1.2.3"
     implementation("io.reactivex.rxjava2:rxandroid:2.0.2")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
