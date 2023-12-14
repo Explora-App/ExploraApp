@@ -3,6 +3,9 @@ package com.example.explora.ui.home
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,6 +24,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -37,7 +42,9 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.HttpException
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.ByteBuffer
 
 
 class HomeFragment : Fragment() {
@@ -54,13 +61,57 @@ class HomeFragment : Fragment() {
             if (isSuccess) {
                 Log.d(
                     TAG,
-                    "SUCCESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+                    "SUCCESSSSSSSSSSSSSSSSSSSS"
                 )
                 uploadImage()
             }
         }
 
     // Fungsi untuk mengambil gambar
+    private fun imageToBitmap(image: Image): Bitmap {
+        val buffer: ByteBuffer = image.planes[0].buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    private fun takePicture() {
+        Log.d(TAG, "Taking picture")
+
+        // Use the imageCapture instance to take a picture
+        imageCapture?.takePicture(
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    super.onCaptureSuccess(image)
+
+                    // Process the captured image
+                    val bitmap = imageToBitmap(image.image!!)
+
+                    // Save the bitmap to a file (you can use your existing logic here)
+                    photoFile = createImageFile()
+
+                    try {
+                        val outputStream = FileOutputStream(photoFile)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                        outputStream.close()
+
+                        // Upload the captured image to the API
+                        uploadImage()
+
+                    } catch (e: IOException) {
+                        Log.e(TAG, "Error saving captured image: ${e.message}")
+                    }
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    super.onError(exception)
+                    Log.e(TAG, "Capture failed: ${exception.message}")
+                }
+            }
+        )
+    }
+
     private fun takePicture() {
         Log.d(TAG, "Taking picture")
         photoFile = createImageFile()
@@ -71,18 +122,6 @@ class HomeFragment : Fragment() {
         )
         takePictureLauncher.launch(photoURI)
     }
-
-//    // Fungsi untuk membuat file gambar
-//    @Throws(IOException::class)
-//    private fun createImageFile(): File {
-//        val storageDir: File? = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//        return File.createTempFile(
-//            "JPEG_${System.currentTimeMillis()}_",
-//            ".jpg",
-//            storageDir
-//        )
-//    }
-
     // Fungsi untuk membuat file gambar
     @Throws(IOException::class)
     private fun createImageFile(): File {
@@ -109,7 +148,6 @@ class HomeFragment : Fragment() {
         )
 
         lifecycleScope.launch {
-
             try {
                 val response =
                     ApiConfig.retrofit.create(ApiService::class.java).uploadImage(filePart)
@@ -133,24 +171,6 @@ class HomeFragment : Fragment() {
                 // Tangani eksepsi umum di sini
                 Log.e("UploadImage", "Error: ${e.message}")
             }
-
-
-//            val response = ApiConfig.retrofit.create(ApiService::class.java).uploadImage(filePart)
-//
-//            if (response.status?.code == 200) {
-//                // Tampilkan nama dan gambar
-//                val name = response.data?.information?.name
-//                val imageUrl = response.data?.information?.image
-//                // Gunakan name dan imageUrl sesuai kebutuhan Anda
-//
-//                val intent = Intent(requireActivity(), DetailPlantActivity::class.java)
-//                intent.putExtra("name", name.toString())
-//                intent.putExtra("imageUrl", imageUrl.toString())
-//                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-//                startActivity(intent)
-//            }
-
-
         }
     }
 
@@ -165,9 +185,7 @@ class HomeFragment : Fragment() {
             Log.d(TAG, "Capture button clicked")
             takePicture()
         }
-
         return binding.root
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -179,10 +197,6 @@ class HomeFragment : Fragment() {
                     else CameraSelector.DEFAULT_BACK_CAMERA
                 startCamera()
             }
-//            binding.captureImage.setOnClickListener {
-//                Log.d(TAG, "Capture button clicked")
-//                takePicture()
-//            }
         }
     }
 
