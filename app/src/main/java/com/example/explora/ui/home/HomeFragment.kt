@@ -112,16 +112,6 @@ class HomeFragment : Fragment() {
         )
     }
 
-    private fun takePicture() {
-        Log.d(TAG, "Taking picture")
-        photoFile = createImageFile()
-        val photoURI: Uri = FileProvider.getUriForFile(
-            requireContext(),
-            "com.example.explora.fileprovider",
-            photoFile
-        )
-        takePictureLauncher.launch(photoURI)
-    }
     // Fungsi untuk membuat file gambar
     @Throws(IOException::class)
     private fun createImageFile(): File {
