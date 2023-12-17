@@ -20,13 +20,25 @@ class DetailPlantActivity : AppCompatActivity() {
         val name = intent.getStringExtra("name")
         val imageUrl = intent.getStringExtra("imageUrl")
 
+//        val name = intent.getStringExtra("plantName")
+//        val name = intent.getStringExtra("latinName")
+//        val name = intent.getStringExtra("description")
+//        val name = intent.getStringExtra("funFact")
+//        val name = intent.getStringExtra("rootType")
+//        val name = intent.getStringExtra("seedType")
+//        val name = intent.getStringExtra("leafType")
+//        val name = intent.getStringExtra("stemType")
 
-        // Gunakan Glide atau library lainnya untuk memuat gambar dari URL
+        binding.backButton.setOnClickListener{
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         Glide.with(this)
             .load(imageUrl)
             .into(binding.imageView)
 
         // Tampilkan nama di TextView
-        binding.descriptionTextView.text = name
+//        binding.descriptionTextView.text = name
+        binding.descriptionTextView.text = "Nama Tanaman: $name"
     }
 }

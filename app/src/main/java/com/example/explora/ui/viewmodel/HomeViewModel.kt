@@ -2,6 +2,7 @@ package com.example.explora.ui.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -64,8 +65,20 @@ class HomeViewModel(private val repository: HomeRepository) : ViewModel() {
                 val name = response.data?.information?.name.toString()
                 val imageUrl = response.data?.information?.image.toString()
 
+//                val plantName = response.data?.information?.name.toString()
+//                val latinName = response.data?.information?.name.toString()
+//                val description = response.data?.information?.name.toString()
+//                val uses = response.data?.information?.name.toString()
+//                val funFact = response.data?.information?.name.toString()
+//                val rootType = response.data?.information?.name.toString()
+//                val seedType = response.data?.information?.name.toString()
+//                val leafType = response.data?.information?.name.toString()
+//                val stemType = response.data?.information?.name.toString()
+
+
                 _uploadResult.value = UploadResult.Success(name, imageUrl)
             } else {
+                // Tampilkan pesan kesalahan ke pengguna
                 _uploadResult.value =
                     UploadResult.Error("HTTP Error: ${response.status?.message}")
             }
@@ -73,6 +86,8 @@ class HomeViewModel(private val repository: HomeRepository) : ViewModel() {
             // error
         }
         _isUploading.value = false
+
+
     }
 }
 

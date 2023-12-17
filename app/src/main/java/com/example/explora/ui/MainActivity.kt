@@ -3,8 +3,11 @@ package com.example.explora.ui
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import androidx.lifecycle.Observer
@@ -78,6 +81,16 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, DetailPlantActivity::class.java)
                     intent.putExtra("name", result.name)
                     intent.putExtra("imageUrl", result.imageUrl)
+
+//                    intent.putExtra("plantName", result.name)
+//                    intent.putExtra("latinName", result.name)
+//                    intent.putExtra("description", result.name)
+//                    intent.putExtra("funFact", result.name)
+//                    intent.putExtra("rootType", result.name)
+//                    intent.putExtra("seedType", result.name)
+//                    intent.putExtra("leafType", result.name)
+//                    intent.putExtra("stemType", result.name)
+
                     startActivity(intent)
                 }
 
@@ -86,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(
                         this,
                         "Upload failed: ${result.errorMessage}",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }

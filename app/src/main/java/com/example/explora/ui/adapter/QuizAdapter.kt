@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explora.R
 import com.example.explora.data.models.dummydata.QuizItem
+import com.example.explora.ui.DetailQuizActivity
 
 class MyAdapter(private val quizItemList: List<QuizItem>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
@@ -28,14 +29,13 @@ class MyAdapter(private val quizItemList: List<QuizItem>) :
         val quizItem = quizItemList[position]
         holder.numberTextView.text = quizItem.number.toString()
 
-        // Tambahkan ini
-//        holder.view.setOnClickListener {
-//            val intent = Intent(holder.view.context, DetailQuizActivity::class.java)
-//            holder.view.context.startActivity(intent)
-//
-//            Toast.makeText(holder.view.context, "Item ${quizItem.number} diklik", Toast.LENGTH_SHORT).show()
-//        }
-
+        holder.view.setOnClickListener {
+            val intent = Intent(holder.view.context, DetailQuizActivity::class.java).apply {
+                putExtra("pertanyaan", quizItem.pertanyaan)
+                putExtra("pilihan_benar", quizItem.pilihan_benar)
+            }
+            holder.view.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount() = quizItemList.size
