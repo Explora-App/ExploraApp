@@ -35,9 +35,12 @@ class HomeViewModel(private val repository: HomeRepository) : ViewModel() {
     val isUploading: LiveData<Boolean> get() = _isUploading
 
 
+
     fun setImageUri(uri: Uri?) {
         _currentImageUri.value = uri
     }
+
+
 
     suspend fun uploadImage(imageUri: Uri, context: Context) {
         _isUploading.value = true
@@ -64,6 +67,7 @@ class HomeViewModel(private val repository: HomeRepository) : ViewModel() {
             if (response.status?.code == 200) {
                 val name = response.data?.information?.name.toString()
                 val imageUrl = response.data?.information?.image.toString()
+
 
 //                val plantName = response.data?.information?.name.toString()
 //                val latinName = response.data?.information?.name.toString()

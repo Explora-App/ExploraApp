@@ -30,6 +30,10 @@ class DetailQuizActivity : AppCompatActivity() {
         binding.questionTextView.text = pertanyaan
         binding.answerTextView.text = pilihanBenar
 
+        binding.backButton.setOnClickListener{
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         binding.cardView.setOnClickListener {
             val animatorOut = ObjectAnimator.ofFloat(
                 binding.cardView,

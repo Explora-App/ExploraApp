@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private var currentImageUri: Uri? = null
     private var imageCapture: ImageCapture? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -61,6 +62,8 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, HomeViewModelFactory(HomeRepository()))
             .get(HomeViewModel::class.java)
+
+
 
         binding.captureImage.setOnClickListener {
             if (allPermissionsGranted()) {
@@ -80,7 +83,9 @@ class MainActivity : AppCompatActivity() {
                         .show()
                     val intent = Intent(this, DetailPlantActivity::class.java)
                     intent.putExtra("name", result.name)
-                    intent.putExtra("imageUrl", result.imageUrl)
+//                    intent.putExtra("imageUrl", result.imageUrl)
+                    intent.putExtra("imageUri", viewModel.currentImageUri.value.toString())
+
 
 //                    intent.putExtra("plantName", result.name)
 //                    intent.putExtra("latinName", result.name)
