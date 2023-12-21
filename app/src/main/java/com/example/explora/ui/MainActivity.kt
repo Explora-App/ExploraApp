@@ -1,22 +1,18 @@
 package com.example.explora.ui
 
 import android.Manifest
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
-import androidx.lifecycle.Observer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import androidx.core.content.ContextCompat
 import android.view.OrientationEventListener
 import android.view.Surface
+import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
@@ -27,8 +23,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.explora.R
-import com.example.explora.data.models.dummydata.myDataset
-import com.example.explora.data.repository.HomeRepository
 import com.example.explora.databinding.ActivityMainBinding
 import com.example.explora.ui.adapter.MyAdapter
 import com.example.explora.ui.util.getImageUri
@@ -43,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: HomeViewModel
-    private lateinit var alertDialog: AlertDialog
     private var currentImageUri: Uri? = null
     private var imageCapture: ImageCapture? = null
 
@@ -53,17 +46,34 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-// Atur RecyclerView
+        viewModel = ViewModelProvider(this, HomeViewModelFactory())
+            .get(HomeViewModel::class.java)
+
+        // Atur RecyclerView
         binding.recyclerView.setHasFixedSize(true)
         val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(this, 3)
         binding.recyclerView.layoutManager = layoutManager
-        val mAdapter = MyAdapter(myDataset)
-        binding.recyclerView.adapter = mAdapter
+        val adapter = MyAdapter(listOf())
+        binding.recyclerView.adapter = adapter
 
-        viewModel = ViewModelProvider(this, HomeViewModelFactory(HomeRepository()))
-            .get(HomeViewModel::class.java)
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                // Tampilkan ProgressBar
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                // Sembunyikan ProgressBar
+                binding.progressBar.visibility = View.GONE
+            }
+        }
 
+        lifecycleScope.launch {
+            viewModel.getQuiz()
+        }
 
+        // Amati quizResponse dan perbarui Adapter setiap kali data berubah
+        viewModel.quizResponse.observe(this) { response ->
+            adapter.updateData(response.data ?: listOf())
+        }
 
         binding.captureImage.setOnClickListener {
             if (allPermissionsGranted()) {
@@ -79,22 +89,21 @@ class MainActivity : AppCompatActivity() {
             when (result) {
                 is UploadResult.Success -> {
                     // Tampilkan hasil jika berhasil
-                    Toast.makeText(this, "Upload successful: ${result.name}", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, "Upload successful: ${result.plantName}", Toast.LENGTH_SHORT)
                         .show()
                     val intent = Intent(this, DetailPlantActivity::class.java)
-                    intent.putExtra("name", result.name)
-//                    intent.putExtra("imageUrl", result.imageUrl)
                     intent.putExtra("imageUri", viewModel.currentImageUri.value.toString())
 
 
-//                    intent.putExtra("plantName", result.name)
-//                    intent.putExtra("latinName", result.name)
-//                    intent.putExtra("description", result.name)
-//                    intent.putExtra("funFact", result.name)
-//                    intent.putExtra("rootType", result.name)
-//                    intent.putExtra("seedType", result.name)
-//                    intent.putExtra("leafType", result.name)
-//                    intent.putExtra("stemType", result.name)
+                    intent.putExtra("plantName", result.plantName)
+                    intent.putExtra("latinName", result.latinName)
+                    intent.putExtra("description", result.description)
+                    intent.putExtra("funFact", result.funFact)
+                    intent.putExtra("rootType", result.rootType)
+                    intent.putExtra("seedType", result.seedType)
+                    intent.putExtra("leafType", result.leafType)
+                    intent.putExtra("stemType", result.stemType)
+                    intent.putExtra("kegunaan", result.uses)
 
                     startActivity(intent)
                 }
@@ -152,8 +161,6 @@ class MainActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     viewModel.uploadImage(viewModel.currentImageUri.value!!, this@MainActivity)
                 }
-            } else {
-//                Log.d(QuizFragment.TAG, "error disini nih ")
             }
         }
     }
@@ -226,6 +233,5 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "CameraActivity"
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
 }

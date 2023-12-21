@@ -9,14 +9,15 @@ import com.example.explora.databinding.ActivityDetailQuizBinding
 
 class DetailQuizActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailQuizBinding
-    private var isBackVisible = false // Boolean untuk mengecek apakah sisi belakang kartu sedang ditampilkan
+    private var isBackVisible =
+        false // Boolean untuk mengecek apakah sisi belakang kartu sedang ditampilkan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Atur cameraDistance untuk efek 3D yang lebih baik
+        // Atur cameraDistance efek 3D
         val distance = 16000
         val scale = resources.displayMetrics.density * distance
         binding.frontCard.cameraDistance = scale
@@ -24,13 +25,12 @@ class DetailQuizActivity : AppCompatActivity() {
 
         // Mengambil data yang dikirim melalui Intent
         val pertanyaan = intent.getStringExtra("pertanyaan")
-        val pilihanBenar = intent.getStringExtra("pilihan_benar")
+        val pilihanBenar = intent.getStringExtra("jawaban_benar")
 
-        // Gunakan data yang diambil untuk menampilkan informasi pada tampilan Anda
         binding.questionTextView.text = pertanyaan
         binding.answerTextView.text = pilihanBenar
 
-        binding.backButton.setOnClickListener{
+        binding.backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
@@ -48,22 +48,22 @@ class DetailQuizActivity : AppCompatActivity() {
                 "rotationY",
                 -90f,
                 0f
-            ) // Membuat animator untuk efek flip masuk
+            )
             animatorIn.duration = 400 // Durasi animasi
 
             animatorOut.addListener(object : Animator.AnimatorListener {
                 override fun onAnimationStart(animation: Animator) {}
 
                 override fun onAnimationEnd(animation: Animator) {
-                    // Mengubah visibilitas kartu setelah animasi selesai
+                    // Mengubah visibilitas
                     if (isBackVisible) {
                         binding.backCard.visibility = View.INVISIBLE
                         binding.frontCard.visibility = View.VISIBLE
-                        animatorIn.start() // Memulai animasi flip masuk
+                        animatorIn.start()
                     } else {
                         binding.frontCard.visibility = View.INVISIBLE
                         binding.backCard.visibility = View.VISIBLE
-                        animatorIn.start() // Memulai animasi flip masuk
+                        animatorIn.start()
                     }
                     isBackVisible = !isBackVisible
                 }
@@ -73,7 +73,7 @@ class DetailQuizActivity : AppCompatActivity() {
                 override fun onAnimationRepeat(animation: Animator) {}
             })
 
-            animatorOut.start() // Memulai animasi flip keluar
+            animatorOut.start()
         }
     }
 }
